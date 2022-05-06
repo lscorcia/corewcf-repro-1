@@ -19,11 +19,6 @@ namespace corewcf_repro_1
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<IISServerOptions>(options =>
-            {
-                options.AllowSynchronousIO = true;
-            });
-
             // WSDL support
             services.AddServiceModelServices().AddServiceModelMetadata();
             services.AddSingleton<IServiceBehavior, UseRequestHeadersForMetadataAddressBehavior>();
@@ -44,7 +39,10 @@ namespace corewcf_repro_1
             // CoreWCF SOAP services
             app.UseServiceModel(wcfBuilder =>
             {
-                wcfBuilder.AddService<EchoService.EchoService>((serviceOptions) => { })
+                wcfBuilder.AddService<EchoService.EchoService>((serviceOptions) =>
+                    {
+                        // serviceOptions.BaseAddresses.Add(new Uri("https://localhost:44340/VirtualFolder/"));
+                    })
                     .AddServiceEndpoint<EchoService.EchoService, EchoService.IEchoService>(
                         new BasicHttpBinding(BasicHttpSecurityMode.Transport), "/ws/EchoService.svc");
             });
